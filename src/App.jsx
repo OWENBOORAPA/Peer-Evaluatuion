@@ -183,10 +183,6 @@ const RED = "var(--color-text-danger)";
 const RED_BG = "var(--color-background-danger)";
 const RED_BORDER = "var(--color-border-danger)";
 
-const BLUE = "var(--color-text-info)";
-const BLUE_BG = "var(--color-background-info)";
-const BLUE_BORDER = "var(--color-border-info)";
-
 function AvatarCircle({ nick, size = 44 }) {
   return (
     <div style={{
@@ -204,7 +200,7 @@ function ProgressBar({ current, total }) {
       {Array.from({ length: total }).map((_, i) => (
         <div key={i} style={{
           flex: 1, height: 3, borderRadius: 2,
-          background: i < current ? BLUE : "var(--color-border-tertiary)",
+          background: i < current ? RED : "var(--color-border-tertiary)",
           transition: "background 0.25s",
         }} />
       ))}
@@ -219,12 +215,10 @@ function ScoreBtn({ value, selected, onClick }) {
   return (
     <button onClick={onClick} style={{
       width: 42, height: 42, borderRadius: "50%", cursor: "pointer",
-      border: selected ? `2px solid ${BLUE}` : "0.5px solid var(--color-border-secondary)",
-      background: selected ? BLUE : "var(--color-background-secondary)",
+      border: selected ? "none" : "0.5px solid var(--color-border-secondary)",
+      background: selected ? RED : "var(--color-background-secondary)",
       color: selected ? "var(--color-background-primary)" : "var(--color-text-secondary)",
       fontSize: 15, fontWeight: selected ? 500 : 400,
-      transform: selected ? "scale(1.12)" : "scale(1)",
-      boxShadow: selected ? `0 0 0 3px ${BLUE_BG}` : "none",
       transition: "all 0.15s", flexShrink: 0,
     }}>{value}</button>
   );
@@ -261,9 +255,8 @@ export default function App() {
   const [peerIdx, setPeerIdx] = useState(0);
   const [scores, setScores] = useState({});
   const [saving, setSaving] = useState(false);
-  const DEFAULT_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzLTGBteILKKLZgr91HNbtMhCC7sAWnZjDQmPVyc9FSVWUKcyU-o6ha35jD2cXLjZkXKA/exec";
-  const [sheetsUrl, setSheetsUrl] = useState(DEFAULT_SHEETS_URL);
-  const [sheetsInput, setSheetsInput] = useState(DEFAULT_SHEETS_URL);
+  const [sheetsUrl, setSheetsUrl] = useState("");
+  const [sheetsInput, setSheetsInput] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [sheetsSaved, setSheetsSaved] = useState(false);
 
@@ -477,11 +470,11 @@ export default function App() {
             <div key={q.id} style={{
               padding: "12px 14px", borderRadius: "var(--border-radius-md)",
               border: answered
-                ? `1px solid ${BLUE_BORDER}`
+                ? `0.5px solid ${RED_BORDER}`
                 : "0.5px solid var(--color-border-tertiary)",
-              background: answered ? BLUE_BG : "var(--color-background-primary)",
+              background: answered ? RED_BG : "var(--color-background-primary)",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-              transition: "all 0.2s",
+              transition: "all 0.15s",
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>
