@@ -179,66 +179,86 @@ const GROUPS = {
   ]},
 };
 
-const RED = "var(--color-text-danger)";
-const RED_BG = "var(--color-background-danger)";
-const RED_BORDER = "var(--color-border-danger)";
+const C = {
+  red: "#c0392b", redBg: "#fdf2f2", redBorder: "#f5c6c6",
+  blue: "#2563eb", blueBg: "#eff6ff", blueBorder: "#bfdbfe",
+  bg: "#f8f9fa", card: "#ffffff", border: "#e5e7eb",
+  text: "#111827", textSub: "#6b7280", textHint: "#9ca3af",
+  s1: "#f59e0b", s1Bg: "#fffbeb", s1Border: "#fde68a",
+  s2: "#3b82f6", s2Bg: "#eff6ff", s2Border: "#bfdbfe",
+  s3: "#10b981", s3Bg: "#ecfdf5", s3Border: "#6ee7b7",
+  green: "#059669",
+};
 
-const BLUE = "var(--color-text-info)";
-const BLUE_BG = "var(--color-background-info)";
-const BLUE_BORDER = "var(--color-border-info)";
+const SCORE_COLOR = { 1: C.s1, 2: C.s2, 3: C.s3 };
+const SCORE_BG = { 1: C.s1Bg, 2: C.s2Bg, 3: C.s3Bg };
+const SCORE_BORDER = { 1: C.s1Border, 2: C.s2Border, 3: C.s3Border };
+const SCORE_LABEL = { 1: "พอใช้", 2: "ดี", 3: "ดีมาก" };
 
 function AvatarCircle({ nick, size = 44 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%", flexShrink: 0,
-      background: RED_BG, border: `1px solid ${RED_BORDER}`,
+      background: C.redBg, border: `2px solid ${C.redBorder}`,
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: size * 0.38, color: RED, fontWeight: 500,
+      fontSize: size * 0.38, color: C.red, fontWeight: 700,
     }}>{nick[0]}</div>
   );
 }
 
 function ProgressBar({ current, total }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
-      {Array.from({ length: total }).map((_, i) => (
-        <div key={i} style={{
-          flex: 1, height: 3, borderRadius: 2,
-          background: i < current ? BLUE : "var(--color-border-tertiary)",
-          transition: "background 0.25s",
-        }} />
-      ))}
-      <span style={{ fontSize: 12, color: "var(--color-text-secondary)", whiteSpace: "nowrap", marginLeft: 4 }}>
-        {current} / {total}
-      </span>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+        {Array.from({ length: total }).map((_, i) => (
+          <div key={i} style={{
+            flex: 1, height: 6, borderRadius: 3,
+            background: i < current ? C.blue : C.border,
+            transition: "background 0.25s",
+          }} />
+        ))}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span style={{ fontSize: 12, color: C.textSub }}>ความคืบหน้า</span>
+        <span style={{ fontSize: 12, color: C.blue, fontWeight: 600 }}>{current} / {total} คน</span>
+      </div>
     </div>
   );
 }
 
 function ScoreBtn({ value, selected, onClick }) {
+  const col = SCORE_COLOR[value];
+  const bg = SCORE_BG[value];
+  const border = SCORE_BORDER[value];
   return (
     <button onClick={onClick} style={{
-      width: 42, height: 42, borderRadius: "50%", cursor: "pointer",
-      border: selected ? `2px solid ${BLUE}` : "0.5px solid var(--color-border-secondary)",
-      background: selected ? BLUE : "var(--color-background-secondary)",
-      color: selected ? "var(--color-background-primary)" : "var(--color-text-secondary)",
-      fontSize: 15, fontWeight: selected ? 500 : 400,
-      transform: selected ? "scale(1.12)" : "scale(1)",
-      boxShadow: selected ? `0 0 0 3px ${BLUE_BG}` : "none",
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", gap: 2,
+      width: 56, height: 56, borderRadius: 12, cursor: "pointer",
+      border: selected ? `2px solid ${col}` : `1.5px solid ${C.border}`,
+      background: selected ? bg : "#fff",
+      color: selected ? col : C.textHint,
+      fontSize: 18, fontWeight: 700,
+      transform: selected ? "scale(1.08)" : "scale(1)",
+      boxShadow: selected ? `0 0 0 3px ${bg}` : "none",
       transition: "all 0.15s", flexShrink: 0,
-    }}>{value}</button>
+    }}>
+      <span style={{ fontSize: 18, fontWeight: 700, lineHeight: 1 }}>{value}</span>
+      <span style={{ fontSize: 9, fontWeight: 500, opacity: selected ? 1 : 0 }}>{SCORE_LABEL[value]}</span>
+    </button>
   );
 }
 
 function PrimaryBtn({ children, onClick, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled} style={{
-      flex: 2, padding: "10px 0", borderRadius: "var(--border-radius-md)",
-      background: disabled ? "var(--color-background-secondary)" : RED,
-      border: disabled ? "0.5px solid var(--color-border-secondary)" : "none",
-      color: disabled ? "var(--color-text-secondary)" : "var(--color-background-primary)",
-      fontSize: 14, fontWeight: 500, cursor: disabled ? "default" : "pointer",
+      flex: 2, padding: "12px 0", borderRadius: 10,
+      background: disabled ? C.border : C.red,
+      border: "none",
+      color: disabled ? C.textHint : "#fff",
+      fontSize: 15, fontWeight: 600, cursor: disabled ? "default" : "pointer",
       transition: "all 0.2s",
+      boxShadow: disabled ? "none" : "0 2px 8px rgba(192,57,43,0.25)",
     }}>{children}</button>
   );
 }
@@ -246,10 +266,9 @@ function PrimaryBtn({ children, onClick, disabled }) {
 function GhostBtn({ children, onClick }) {
   return (
     <button onClick={onClick} style={{
-      flex: 1, padding: "10px 0", borderRadius: "var(--border-radius-md)",
-      background: "var(--color-background-secondary)",
-      border: "0.5px solid var(--color-border-secondary)",
-      color: "var(--color-text-secondary)", fontSize: 14, cursor: "pointer",
+      flex: 1, padding: "12px 0", borderRadius: 10,
+      background: "#fff", border: `1.5px solid ${C.border}`,
+      color: C.textSub, fontSize: 14, fontWeight: 500, cursor: "pointer",
     }}>{children}</button>
   );
 }
@@ -333,78 +352,62 @@ export default function App() {
   };
 
   const wrap = (content) => (
-    <div style={{ padding: "1.5rem 0", maxWidth: 560 }}>
-      {content}
+    <div style={{ minHeight: "100vh", background: C.bg, padding: "0 0 40px" }}>
+      <div style={{ maxWidth: 560, margin: "0 auto", padding: "0 16px" }}>
+        {content}
+      </div>
     </div>
   );
 
   if (step === 1) return wrap(
     <>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div>
-            <p style={{ fontSize: 13, color: RED, fontWeight: 500, marginBottom: 2 }}>同伴互评表</p>
-            <h2 style={{ fontSize: 20, fontWeight: 500, margin: 0, color: "var(--color-text-primary)" }}>
-              แบบประเมิน Peer Group
-            </h2>
-            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", marginTop: 6 }}>
-              เลือก Section/Group และชื่อของคุณ จากนั้นประเมินสมาชิกทุกคนในกลุ่ม
-            </p>
-          </div>
-          <button onClick={() => setShowSettings(s => !s)} title="ตั้งค่า Google Sheets" style={{
-            background: showSettings ? RED_BG : "var(--color-background-secondary)",
-            border: showSettings ? `1px solid ${RED_BORDER}` : "0.5px solid var(--color-border-tertiary)",
-            borderRadius: "var(--border-radius-md)", padding: "6px 10px", cursor: "pointer",
-            fontSize: 13, color: showSettings ? RED : "var(--color-text-secondary)", flexShrink: 0, marginLeft: 12,
-          }}>
-            ⚙ Sheets
-          </button>
-        </div>
+      <div style={{
+        background: C.red, padding: "24px 20px 20px", margin: "0 -16px 24px",
+        borderRadius: "0 0 20px 20px",
+      }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginBottom: 4, letterSpacing: 1 }}>同伴互评表</p>
+        <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: "#fff" }}>
+          แบบประเมิน Peer Group
+        </h2>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", marginTop: 6 }}>
+          เลือก Section/Group และชื่อของคุณ จากนั้นประเมินสมาชิกทุกคนในกลุ่ม
+        </p>
+        <button onClick={() => setShowSettings(s => !s)} style={{
+          marginTop: 10, background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)",
+          borderRadius: 8, padding: "5px 12px", cursor: "pointer",
+          fontSize: 12, color: "#fff",
+        }}>
+          ⚙ ตั้งค่า Google Sheets {sheetsUrl ? "✓" : ""}
+        </button>
         {showSettings && (
-          <div style={{
-            marginTop: 12, padding: "14px 16px", borderRadius: "var(--border-radius-md)",
-            border: `1px solid ${RED_BORDER}`, background: RED_BG,
-          }}>
-            <p style={{ fontSize: 12, fontWeight: 500, color: RED, marginBottom: 8 }}>
-              Google Apps Script URL
-            </p>
+          <div style={{ marginTop: 12, padding: "12px", borderRadius: 10, background: "rgba(255,255,255,0.15)" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#fff", marginBottom: 8 }}>Google Apps Script URL</p>
             <div style={{ display: "flex", gap: 8 }}>
-              <input
-                type="text" value={sheetsInput}
-                onChange={e => setSheetsInput(e.target.value)}
+              <input type="text" value={sheetsInput} onChange={e => setSheetsInput(e.target.value)}
                 placeholder="https://script.google.com/macros/s/…/exec"
-                style={{ flex: 1, fontSize: 12 }}
-              />
+                style={{ flex: 1, fontSize: 12, borderRadius: 8, border: "none", padding: "6px 10px" }} />
               <button onClick={saveSheetUrl} style={{
-                padding: "0 14px", borderRadius: "var(--border-radius-md)",
-                background: sheetsSaved ? "var(--color-background-success)" : RED,
-                border: "none", color: "var(--color-background-primary)",
-                fontSize: 13, cursor: "pointer", whiteSpace: "nowrap",
+                padding: "0 14px", borderRadius: 8, background: sheetsSaved ? C.green : "#fff",
+                border: "none", color: sheetsSaved ? "#fff" : C.red,
+                fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap",
               }}>
-                {sheetsSaved ? "บันทึกแล้ว ✓" : "บันทึก"}
+                {sheetsSaved ? "✓ บันทึก" : "บันทึก"}
               </button>
             </div>
-            {sheetsUrl
-              ? <p style={{ fontSize: 11, color: RED, marginTop: 6 }}>เชื่อมต่อแล้ว — ข้อมูลจะส่งเข้า Google Sheet อัตโนมัติ</p>
-              : <p style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 6 }}>ยังไม่ได้ตั้งค่า — ดูวิธีตั้งค่าด้านล่าง</p>
-            }
           </div>
         )}
       </div>
 
-      <label style={{ fontSize: 13, color: "var(--color-text-secondary)", display: "block", marginBottom: 6 }}>
+      <label style={{ fontSize: 13, color: C.textSub, display: "block", marginBottom: 6, fontWeight: 500 }}>
         Section — Group
       </label>
-      <select
-        value={groupKey}
-        onChange={e => { setGroupKey(e.target.value); setSelfId(""); }}
-        style={{ width: "100%", marginBottom: 20 }}
-      >
+      <select value={groupKey} onChange={e => { setGroupKey(e.target.value); setSelfId(""); }}
+        style={{ width: "100%", marginBottom: 20, padding: "10px 12px", borderRadius: 10,
+          border: `1.5px solid ${C.border}`, fontSize: 14, background: "#fff", color: C.text }}>
         <option value="">— กรุณาเลือก Section/Group —</option>
         {["1","2","3","4"].map(sec => (
           <optgroup key={sec} label={`Section ${sec}`}>
-            {Object.entries(GROUPS)
-              .filter(([k]) => k.startsWith(sec + "-"))
+            {Object.entries(GROUPS).filter(([k]) => k.startsWith(sec + "-"))
               .map(([k, g]) => <option key={k} value={k}>{g.label}</option>)}
           </optgroup>
         ))}
@@ -412,7 +415,7 @@ export default function App() {
 
       {groupKey && (
         <>
-          <label style={{ fontSize: 13, color: "var(--color-text-secondary)", display: "block", marginBottom: 10 }}>
+          <label style={{ fontSize: 13, color: C.textSub, display: "block", marginBottom: 10, fontWeight: 500 }}>
             คุณคือใคร? (ฉันคือ…)
           </label>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 8, marginBottom: 24 }}>
@@ -421,17 +424,16 @@ export default function App() {
               return (
                 <div key={m.id} onClick={() => setSelfId(m.id)} style={{
                   display: "flex", alignItems: "center", gap: 10,
-                  padding: "10px 12px", borderRadius: "var(--border-radius-md)", cursor: "pointer",
-                  border: active ? `1.5px solid ${RED}` : "0.5px solid var(--color-border-tertiary)",
-                  background: active ? RED_BG : "var(--color-background-primary)",
+                  padding: "10px 12px", borderRadius: 12, cursor: "pointer",
+                  border: active ? `2px solid ${C.red}` : `1.5px solid ${C.border}`,
+                  background: active ? C.redBg : "#fff",
+                  boxShadow: active ? `0 0 0 3px ${C.redBg}` : "none",
                   transition: "all 0.15s",
                 }}>
                   <AvatarCircle nick={m.nick} size={38} />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: "var(--color-text-primary)" }}>{m.nick}</div>
-                    <div style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>
-                      {m.name.replace(/^(Miss|Mr\.) /, "")}
-                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{m.nick}</div>
+                    <div style={{ fontSize: 11, color: C.textSub }}>{m.name.replace(/^(Miss|Mr\.) /, "")}</div>
                   </div>
                 </div>
               );
@@ -449,51 +451,55 @@ export default function App() {
 
   if (step === 2 && currentPeer) return wrap(
     <>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
-          ประเมินสมาชิก <strong style={{ color: RED }}>{peerIdx + 1}</strong> / {peers.length} คน
-        </span>
-        <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{group?.label}</span>
+      <div style={{ padding: "20px 0 0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <span style={{ fontSize: 13, color: C.textSub }}>
+            ประเมินสมาชิก <strong style={{ color: C.blue }}>{peerIdx + 1}</strong> / {peers.length} คน
+          </span>
+          <span style={{ fontSize: 11, color: C.textHint, background: C.border, borderRadius: 6, padding: "2px 8px" }}>{group?.label}</span>
+        </div>
+        <ProgressBar current={peerIdx + 1} total={peers.length} />
       </div>
-      <ProgressBar current={peerIdx + 1} total={peers.length} />
 
       <div style={{
-        display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
-        borderRadius: "var(--border-radius-lg)", marginBottom: 20,
-        background: "var(--color-background-secondary)",
-        border: "0.5px solid var(--color-border-tertiary)",
+        display: "flex", alignItems: "center", gap: 14, padding: "16px",
+        borderRadius: 16, marginBottom: 16,
+        background: "#fff", border: `1.5px solid ${C.border}`,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
       }}>
         <AvatarCircle nick={currentPeer.nick} size={52} />
         <div>
-          <div style={{ fontSize: 17, fontWeight: 500, color: "var(--color-text-primary)" }}>{currentPeer.nick}</div>
-          <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>{currentPeer.name}</div>
-          <div style={{ fontSize: 11, color: "var(--color-text-secondary)", opacity: 0.65 }}>{currentPeer.id}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: C.text }}>{currentPeer.nick}</div>
+          <div style={{ fontSize: 13, color: C.textSub }}>{currentPeer.name}</div>
+          <div style={{ fontSize: 11, color: C.textHint }}>{currentPeer.id}</div>
+        </div>
+        <div style={{ marginLeft: "auto", textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: C.blue }}>
+            {QUESTIONS.filter(q => peerScores[q.id] != null).length}
+          </div>
+          <div style={{ fontSize: 10, color: C.textHint }}>/{QUESTIONS.length} ข้อ</div>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
         {QUESTIONS.map(q => {
           const answered = peerScores[q.id] != null;
+          const sel = peerScores[q.id];
           return (
             <div key={q.id} style={{
-              padding: "12px 14px", borderRadius: "var(--border-radius-md)",
-              border: answered
-                ? `1px solid ${BLUE_BORDER}`
-                : "0.5px solid var(--color-border-tertiary)",
-              background: answered ? BLUE_BG : "var(--color-background-primary)",
+              padding: "12px 14px", borderRadius: 12,
+              border: answered ? `1.5px solid ${SCORE_BORDER[sel]}` : `1.5px solid ${C.border}`,
+              background: answered ? SCORE_BG[sel] : "#fff",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-              transition: "all 0.2s",
+              transition: "all 0.2s", boxShadow: answered ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>
-                  {q.id}. {q.zh}
-                </div>
-                <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 1 }}>{q.th}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{q.id}. {q.zh}</div>
+                <div style={{ fontSize: 12, color: C.textSub, marginTop: 1 }}>{q.th}</div>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
                 {[1, 2, 3].map(v => (
-                  <ScoreBtn key={v} value={v}
-                    selected={peerScores[q.id] === v}
+                  <ScoreBtn key={v} value={v} selected={peerScores[q.id] === v}
                     onClick={() => setScore(currentPeer.id, q.id, v)} />
                 ))}
               </div>
@@ -503,9 +509,7 @@ export default function App() {
       </div>
 
       <div style={{ display: "flex", gap: 8 }}>
-        <GhostBtn onClick={() => peerIdx > 0 ? setPeerIdx(i => i - 1) : setStep(1)}>
-          ← ย้อนกลับ
-        </GhostBtn>
+        <GhostBtn onClick={() => peerIdx > 0 ? setPeerIdx(i => i - 1) : setStep(1)}>← ย้อนกลับ</GhostBtn>
         <PrimaryBtn onClick={goNext} disabled={!allAnswered}>
           {peerIdx < peers.length - 1 ? "ถัดไป →" : "ตรวจสอบคำตอบ →"}
         </PrimaryBtn>
@@ -515,64 +519,56 @@ export default function App() {
 
   if (step === 3) return wrap(
     <>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 2 }}>ตรวจสอบคะแนนก่อนส่ง</h2>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
-          ผู้ประเมิน: {selfMember?.nick} · {selfMember?.name}
-        </p>
+      <div style={{ padding: "20px 0 16px" }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: C.text }}>ตรวจสอบคะแนนก่อนส่ง</h2>
+        <p style={{ fontSize: 13, color: C.textSub }}>ผู้ประเมิน: {selfMember?.nick} · {selfMember?.name}</p>
       </div>
 
-      <div style={{
-        padding: "8px 14px", borderRadius: "var(--border-radius-md)", marginBottom: 14,
-        background: "var(--color-background-secondary)",
-        border: "0.5px solid var(--color-border-tertiary)",
-        display: "grid", gridTemplateColumns: "1fr repeat(8, auto) auto",
-        gap: "6px 10px", alignItems: "center",
-        fontSize: 11, color: "var(--color-text-secondary)", fontWeight: 500,
-      }}>
-        <span>สมาชิก</span>
-        {QUESTIONS.map(q => <span key={q.id} style={{ textAlign: "center" }}>{q.id}</span>)}
-        <span style={{ textAlign: "right" }}>รวม</span>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
         {peers.map(peer => {
           const total = totalScore(peer.id);
+          const pct = Math.round((total / MAX) * 100);
           return (
             <div key={peer.id} style={{
-              padding: "10px 14px", borderRadius: "var(--border-radius-md)",
-              border: "0.5px solid var(--color-border-tertiary)",
-              background: "var(--color-background-primary)",
-              display: "grid", gridTemplateColumns: "1fr repeat(8, auto) auto",
-              gap: "6px 10px", alignItems: "center",
+              padding: "14px 16px", borderRadius: 14,
+              border: `1.5px solid ${C.border}`, background: "#fff",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
             }}>
-              <div>
-                <span style={{ fontSize: 13, fontWeight: 500 }}>{peer.nick}</span>
-                <span style={{ fontSize: 11, color: "var(--color-text-secondary)", marginLeft: 6 }}>
-                  {peer.name.replace(/^(Miss|Mr\.) /, "")}
-                </span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <AvatarCircle nick={peer.nick} size={36} />
+                  <div>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{peer.nick}</span>
+                    <div style={{ fontSize: 11, color: C.textSub }}>{peer.name.replace(/^(Miss|Mr\.) /, "")}</div>
+                  </div>
+                </div>
+                <span style={{ fontSize: 18, fontWeight: 700, color: C.red }}>{total}<span style={{ fontSize: 12, color: C.textHint }}>/{MAX}</span></span>
               </div>
-              {QUESTIONS.map(q => (
-                <span key={q.id} style={{
-                  fontSize: 13, textAlign: "center",
-                  color: scores[peer.id]?.[q.id] ? "var(--color-text-primary)" : RED,
-                  fontWeight: 500,
-                }}>
-                  {scores[peer.id]?.[q.id] || "—"}
-                </span>
-              ))}
-              <span style={{ fontSize: 14, fontWeight: 500, color: RED, textAlign: "right" }}>
-                {total}/{MAX}
-              </span>
+              <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                {QUESTIONS.map(q => {
+                  const v = scores[peer.id]?.[q.id];
+                  return (
+                    <div key={q.id} style={{
+                      flex: 1, textAlign: "center", padding: "4px 2px", borderRadius: 6,
+                      background: v ? SCORE_BG[v] : C.bg,
+                      border: `1px solid ${v ? SCORE_BORDER[v] : C.border}`,
+                    }}>
+                      <div style={{ fontSize: 9, color: C.textHint }}>{q.id}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: v ? SCORE_COLOR[v] : C.textHint }}>{v || "—"}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ height: 6, borderRadius: 3, background: C.bg }}>
+                <div style={{ width: `${pct}%`, height: "100%", borderRadius: 3, background: C.red, transition: "width 0.4s" }} />
+              </div>
             </div>
           );
         })}
       </div>
 
       <div style={{ display: "flex", gap: 8 }}>
-        <GhostBtn onClick={() => { setPeerIdx(peers.length - 1); setStep(2); }}>
-          ← แก้ไข
-        </GhostBtn>
+        <GhostBtn onClick={() => { setPeerIdx(peers.length - 1); setStep(2); }}>← แก้ไข</GhostBtn>
         <PrimaryBtn onClick={handleSubmit} disabled={saving}>
           {saving ? "กำลังบันทึก..." : "ยืนยันและส่งคะแนน ✓"}
         </PrimaryBtn>
@@ -582,45 +578,32 @@ export default function App() {
 
   if (step === 4) return wrap(
     <>
-      <div style={{ textAlign: "center", padding: "16px 0 28px" }}>
+      <div style={{ textAlign: "center", padding: "40px 0 28px" }}>
         <div style={{
-          width: 56, height: 56, borderRadius: "50%", margin: "0 auto 14px",
-          background: RED_BG, border: `1px solid ${RED_BORDER}`,
+          width: 72, height: 72, borderRadius: "50%", margin: "0 auto 16px",
+          background: "#ecfdf5", border: `2px solid ${C.green}`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 24, color: RED,
+          fontSize: 32, color: C.green,
         }}>✓</div>
-        <h2 style={{ fontSize: 19, fontWeight: 500, margin: "0 0 6px" }}>ส่งแบบประเมินเรียบร้อยแล้ว!</h2>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
-          {selfMember?.nick} ({selfMember?.name}) · {group?.label}
-        </p>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
-          ประเมินสมาชิกทั้งหมด {peers.length} คนเรียบร้อย
-        </p>
+        <h2 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 8px", color: C.text }}>ส่งแบบประเมินเรียบร้อย!</h2>
+        <p style={{ fontSize: 14, color: C.textSub }}>{selfMember?.nick} · {group?.label}</p>
+        <p style={{ fontSize: 13, color: C.textHint }}>ประเมินสมาชิกทั้งหมด {peers.length} คนเรียบร้อย</p>
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        <p style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 10, fontWeight: 500 }}>
-          สรุปคะแนนที่ประเมิน
-        </p>
         {peers.map(peer => {
           const total = totalScore(peer.id);
           const pct = Math.round((total / MAX) * 100);
           return (
-            <div key={peer.id} style={{ marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 13 }}>
-                  {peer.nick}
-                  <span style={{ fontSize: 11, color: "var(--color-text-secondary)", marginLeft: 8 }}>
-                    {peer.name.replace(/^(Miss|Mr\.) /, "")}
-                  </span>
+            <div key={peer.id} style={{ marginBottom: 12, padding: "12px 14px", borderRadius: 12, background: "#fff", border: `1.5px solid ${C.border}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{peer.nick}
+                  <span style={{ fontSize: 11, color: C.textSub, marginLeft: 8 }}>{peer.name.replace(/^(Miss|Mr\.) /, "")}</span>
                 </span>
-                <span style={{ fontSize: 13, fontWeight: 500, color: RED }}>{total}/{MAX}</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: C.green }}>{total}/{MAX}</span>
               </div>
-              <div style={{ height: 5, borderRadius: 3, background: "var(--color-border-tertiary)" }}>
-                <div style={{
-                  width: `${pct}%`, height: "100%", borderRadius: 3,
-                  background: RED, transition: "width 0.4s",
-                }} />
+              <div style={{ height: 8, borderRadius: 4, background: C.bg }}>
+                <div style={{ width: `${pct}%`, height: "100%", borderRadius: 4, background: C.green, transition: "width 0.4s" }} />
               </div>
             </div>
           );
